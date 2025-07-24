@@ -1,0 +1,5 @@
+body.dark {
+  background-color: #121212;
+  color: #f0f0f0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
