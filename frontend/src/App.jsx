@@ -7,24 +7,30 @@ function App() {
   const [theme, setTheme] = useState('dark');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [response, setResponse] = useState('');
   const [history, setHistory] = useState([
-    "How are you?",
-    "Translate to French: Hello",
-    "What is AI?"
+    {
+      id: 0,
+      messages: ["How are you?", "Explain quantum physics"]
+    }
   ]);
+  const [activeChatIndex, setActiveChatIndex] = useState(0);
 
   const handleSubmit = () => {
     if (!input.trim()) return;
-    setHistory([...history, input]);
-    setResponse(`You said: ${input}`);
+
+    const fakeResponse = `You said: ${input}`;
+
+    // Update current chat
+    const updatedHistory = [...history];
+    updatedHistory[activeChatIndex].messages.push(input);
+    updatedHistory[activeChatIndex].messages.push(fakeResponse);
+    setHistory(updatedHistory);
+
     setInput('');
   };
 
   const handleSelectHistory = (index) => {
-    const item = history[index];
-    setInput(item);
-    setResponse(`You selected: ${item}`);
+    setActiveChatIndex(index);
   };
 
   return (
@@ -40,7 +46,11 @@ function App() {
 
       <div className="chat-container">
         <div className="chat-messages">
-          {response && <div className="bot-response">{response}</div>}
+          {history[activeChatIndex]?.messages.map((msg, idx) => (
+            <div key={idx} className={idx % 2 === 0 ? "user-msg" : "bot-response"}>
+              {msg}
+            </div>
+          ))}
         </div>
 
         <div className="input-area">
@@ -49,6 +59,12 @@ function App() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
           />
           <button onClick={handleSubmit}>Send</button>
         </div>
